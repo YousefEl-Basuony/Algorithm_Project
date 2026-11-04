@@ -253,3 +253,4 @@ const Algorithms = {
 };
 
 window.Algorithms = Algorithms;
+

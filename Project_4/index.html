@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Visualizer — BFS &amp; DFS Interactive Studio</title>
+  <meta name="description" content="A precision, studio-grade graph visualizer for Breadth-First Search and Depth-First Search with interactive drawing, live queue/stack tracking, and step-by-step time-travel scrubbing.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Main Interactive Canvas -->
+    <div id="canvas-wrapper">
+      <canvas id="graph-canvas"></canvas>
+    </div>
+
+    <!-- Floating Top Bar -->
+    <header class="top-bar">
+      <div class="brand-section">
+        <div class="brand-icon">
+          <!-- Graph Node Icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="6" r="3"/>
+            <circle cx="18" cy="6" r="3"/>
+            <circle cx="12" cy="18" r="3"/>
+            <line x1="8.5" y1="7.5" x2="10.5" y2="15.5"/>
+            <line x1="15.5" y1="7.5" x2="13.5" y2="15.5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>Graph Visualizer <span class="badge-tag">Studio</span></h1>
+        </div>
+      </div>
+
+      <div class="controls-section">
+        <!-- Algorithm Switcher -->
+        <div class="control-group">
+          <span>Algorithm:</span>
+          <div class="select-wrapper">
+            <select id="algo-select" class="custom-select">
+              <option value="bfs">Breadth-First Search (BFS)</option>
+              <option value="dfs">Depth-First Search (DFS)</option>
+            </select>
+            <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Start Node Selector -->
+        <div class="control-group">
+          <span>Start:</span>
+          <div class="select-wrapper">
+            <select id="start-node-select" class="custom-select">
+              <!-- Populated dynamically -->
+            </select>
+            <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Directed / Undirected Toggle -->
+        <label class="toggle-switch" title="Toggle directed edges with arrowheads">
+          <input type="checkbox" id="directed-toggle">
+          <div class="toggle-slider"></div>
+          <span style="font-size: 13px; color: var(--text-secondary);">Directed</span>
+        </label>
+
+        <!-- Presets Dropdown -->
+        <div class="control-group">
+          <div class="select-wrapper">
+            <select id="presets-select" class="custom-select">
+              <option value="" disabled selected>Presets...</option>
+              <option value="binaryTree">Binary Tree (Depth 3)</option>
+              <option value="petersen">Petersen Graph</option>
+              <option value="cycleChord">Cycle &amp; Bridges</option>
+              <option value="gridMaze">3x3 Mesh Grid</option>
+            </select>
+            <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="actions-section">
+        <button id="sound-btn" class="icon-btn" title="Toggle Audio (M)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </button>
+
+        <button id="share-btn" class="icon-btn" title="Export / Import JSON">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+
+        <button id="export-img-btn" class="icon-btn" title="Snapshot HD Image">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </button>
+
+        <button id="help-btn" class="icon-btn" title="Shortcuts &amp; Guide (?)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Left Floating Dock / Tools -->
+    <nav class="left-dock">
+      <button id="tool-select" class="dock-btn active" title="Select &amp; Drag Nodes (V)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3l7 18 3-7 7-3L3 3z"/>
+        </svg>
+      </button>
+
+      <button id="tool-node" class="dock-btn" title="Add Node: Click Canvas (N)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+      </button>
+
+      <button id="tool-edge" class="dock-btn" title="Connect Edge: Drag Node to Node (E)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="6" r="3"/>
+          <circle cx="18" cy="18" r="3"/>
+          <line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/>
+        </svg>
+      </button>
+
+      <button id="tool-erase" class="dock-btn" title="Erase Node / Edge (X)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+      </button>
+
+      <div class="dock-divider"></div>
+
+      <button id="tool-undo" class="dock-btn" title="Undo (Ctrl+Z)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+      </button>
+
+      <button id="tool-redo" class="dock-btn" title="Redo (Ctrl+Y)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+
+      <button id="tool-fit" class="dock-btn" title="Fit to View (F)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"/>
+          <polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/>
+          <line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+      </button>
+
+      <button id="tool-clear" class="dock-btn" title="Clear Canvas">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </button>
+    </nav>
+
+    <!-- Bottom Playback Controller -->
+    <div class="bottom-transport">
+      <div class="transport-buttons">
+        <button id="reset-btn" class="playback-btn icon-only" title="Reset Traversal (R)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+
+        <button id="step-back-btn" class="playback-btn icon-only" title="Step Back (&larr;)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="11 19 2 12 11 5 11 19"/>
+            <polygon points="22 19 13 12 22 5 22 19"/>
+          </svg>
+        </button>
+
+        <button id="play-pause-btn" class="playback-btn primary" title="Play / Pause (Space)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Play</span>
+        </button>
+
+        <button id="step-forward-btn" class="playback-btn icon-only" title="Step Forward (&rarr;)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="13 19 22 12 13 5 13 19"/>
+            <polygon points="2 19 11 12 2 5 2 19"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Scrubber -->
+      <div class="scrubber-group">
+        <input type="range" id="timeline-scrubber" class="step-slider" min="0" max="10" value="0">
+        <div id="step-counter" class="step-badge">0 / 0</div>
+      </div>
+
+      <!-- Speed selector -->
+      <div class="speed-pills">
+        <button class="speed-btn" data-speed="0.5">0.5x</button>
+        <button class="speed-btn active" data-speed="1">1x</button>
+        <button class="speed-btn" data-speed="2">2x</button>
+        <button class="speed-btn" data-speed="4">4x</button>
+      </div>
+    </div>
+
+    <!-- Right Inspector Panel -->
+    <button id="restore-panel-btn" class="restore-panel-btn" style="display: none;" title="Open Inspector">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      <span>Inspector</span>
+    </button>
+
+    <aside id="inspector-panel" class="inspector-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>Live Execution Inspector</span>
+        </div>
+        <button id="panel-toggle" class="panel-toggle-btn" title="Collapse Panel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="panel-content">
+        <!-- Live Step Narrative -->
+        <div class="panel-section">
+          <span class="section-label">Current Action</span>
+          <div id="step-description" class="step-card">
+            Awaiting traversal start...
+          </div>
+        </div>
+
+        <!-- Dynamic Data Structure Tracker -->
+        <div class="panel-section">
+          <span id="ds-title" class="section-label">Queue (FIFO Tracker)</span>
+          <div id="ds-container" class="ds-container">
+            <div class="ds-empty">Structure is currently empty</div>
+          </div>
+        </div>
+
+        <!-- Traversal Sequence -->
+        <div class="panel-section">
+          <span class="section-label">Traversal Sequence</span>
+          <div id="traversal-path" class="traversal-track">
+            <span class="empty-path">Awaiting start...</span>
+          </div>
+        </div>
+
+        <!-- Pseudocode Viewer -->
+        <div class="panel-section">
+          <span class="section-label">Algorithm Pseudocode</span>
+          <div id="pseudocode-lines" class="code-block">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Graph Theory Metrics -->
+        <div class="panel-section">
+          <span class="section-label">Topology Metrics</span>
+          <div class="metrics-grid">
+            <div class="metric-cell">
+              <span id="metric-nodes" class="metric-val">0</span>
+              <span class="metric-key">|V| Nodes</span>
+            </div>
+            <div class="metric-cell">
+              <span id="metric-edges" class="metric-val">0</span>
+              <span class="metric-key">|E| Edges</span>
+            </div>
+            <div class="metric-cell">
+              <span id="metric-density" class="metric-val">0.00</span>
+              <span class="metric-key">Density</span>
+            </div>
+            <div class="metric-cell">
+              <span id="metric-components" class="metric-val">1</span>
+              <span class="metric-key">Components</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Modal: Keyboard Shortcuts & Guide -->
+    <div id="help-modal" class="modal-overlay">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h3>Keyboard Shortcuts &amp; Studio Guide</h3>
+          <button id="close-help-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <table class="shortcut-table">
+            <tr><td>Play / Pause Traversal</td><td><span class="kbd">Space</span></td></tr>
+            <tr><td>Step Forward / Backward</td><td><span class="kbd">&rarr;</span> / <span class="kbd">&larr;</span></td></tr>
+            <tr><td>Reset Traversal</td><td><span class="kbd">R</span></td></tr>
+            <tr><td>Select / Move Mode</td><td><span class="kbd">V</span></td></tr>
+            <tr><td>Add Node Mode</td><td><span class="kbd">N</span></td></tr>
+            <tr><td>Connect Edge Mode</td><td><span class="kbd">E</span></td></tr>
+            <tr><td>Erase Mode</td><td><span class="kbd">X</span></td></tr>
+            <tr><td>Fit / Center Graph</td><td><span class="kbd">F</span></td></tr>
+            <tr><td>Toggle Audio Synthesizer</td><td><span class="kbd">M</span></td></tr>
+            <tr><td>Undo / Redo</td><td><span class="kbd">Ctrl+Z</span> / <span class="kbd">Ctrl+Y</span></td></tr>
+            <tr><td>Set Start Node</td><td><span class="kbd">Right-Click Node</span></td></tr>
+            <tr><td>Pan Canvas</td><td><span class="kbd">Space + Drag</span> or <span class="kbd">Middle Click</span></td></tr>
+            <tr><td>Zoom View</td><td><span class="kbd">Mouse Wheel</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Share / Export / Import JSON -->
+    <div id="share-modal" class="modal-overlay">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h3>Export &amp; Import Graph JSON</h3>
+          <button id="close-share-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 12px; color: var(--text-secondary);">
+            Copy your graph configuration or paste an existing graph JSON below:
+          </p>
+          <textarea id="graph-json-area" class="json-textarea" spellcheck="false"></textarea>
+          <div class="modal-actions">
+            <button id="copy-json-btn" class="modal-btn">Copy JSON</button>
+            <button id="import-json-btn" class="modal-btn primary">Load Graph</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/algorithms.js"></script>
+  <script src="js/presets.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

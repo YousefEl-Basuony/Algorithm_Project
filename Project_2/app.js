@@ -1,6 +1,6 @@
 /**
  * Main Controller for Sorting Visualizer
- * Orchestrates DOM rendering, Generator execution, Sound, and UI interactions.
+ * Orchestrates DOM rendering, Generator execution, Sound, Pointers, and UI interactions.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,9 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusBeacon = document.getElementById('status-beacon');
   const statusText = document.getElementById('status-text');
 
+  const codeHudLine = document.getElementById('code-hud-line');
+  const codeHudDesc = document.getElementById('code-hud-desc');
+
   // State
   let array = [];
-  let arraySize = parseInt(sizeSlider.value, 10);
+  let arraySize = parseInt(sizeSlider.value, 10) || 10;
   let animationSpeed = parseInt(speedSlider.value, 10);
   let activeGenerator = null;
   let isSorting = false;
@@ -38,9 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let startTime = 0;
   let accumulatedTime = 0;
   let timerInterval = null;
-  let currentPivotIndex = null;
+
+  // Active Pointers
+  let activePivotIdx = null;
+  let activeI = null;
+  let activeJ = null;
 
   // Initialize
+  updateSpeedLabel(animationSpeed);
   updateComplexityBadge();
   generateArray();
 
@@ -72,15 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
   btnShuffle.addEventListener('click', () => {
     resetState();
     generateArray();
-    statusText.textContent = 'Generated fresh array. Ready to sort.';
+    statusText.textContent = `Generated fresh array with ${arraySize} elements. Ready.`;
+    codeHudLine.textContent = `// Array randomized (${array.join(', ')})`;
+    codeHudDesc.textContent = `Ready to sort`;
   });
 
   btnStart.addEventListener('click', () => {
     if (isSorting && isPaused) {
-      // Resume
       resumeSorting();
     } else if (!isSorting) {
-      // Start fresh
       startSorting();
     }
   });
@@ -123,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     array = [];
 
     const minVal = 10;
-    const maxVal = 100;
+    const maxVal = 99;
 
     if (distribution === 'random') {
       for (let i = 0; i < arraySize; i++) {
@@ -144,8 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < arraySize; i++) {
         array.push(Math.round(minVal + i * step));
       }
-      // Swap a few random adjacent elements
-      const numSwaps = Math.max(2, Math.floor(arraySize * 0.08));
+      // Swap 1 or 2 adjacent elements
+      const numSwaps = Math.max(1, Math.floor(arraySize * 0.15));
       for (let s = 0; s < numSwaps; s++) {
         const idx = Math.floor(Math.random() * (arraySize - 1));
         const temp = array[idx];
@@ -154,57 +162,123 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    renderBars();
+    renderPillars();
   }
 
-  function renderBars() {
+  function renderPillars() {
     barsContainer.innerHTML = '';
     const maxVal = Math.max(...array, 100);
 
     for (let i = 0; i < array.length; i++) {
+      const pillar = document.createElement('div');
+      pillar.className = 'pillar-column';
+      pillar.dataset.index = i;
+
+      // The Bar Element
       const bar = document.createElement('div');
-      bar.className = 'bar';
-      bar.dataset.index = i;
+      bar.className = 'bar-element';
       bar.dataset.value = array[i];
 
-      const heightPercent = (array[i] / maxVal) * 92 + 6;
+      const heightPercent = (array[i] / maxVal) * 82 + 10;
       bar.style.height = `${heightPercent}%`;
 
-      if (arraySize <= 45) {
-        const valSpan = document.createElement('span');
-        valSpan.className = 'bar-val';
-        valSpan.textContent = array[i];
-        bar.appendChild(valSpan);
-      }
+      // Value Tag on Top
+      const numSpan = document.createElement('span');
+      numSpan.className = 'bar-number';
+      numSpan.textContent = array[i];
+      bar.appendChild(numSpan);
 
-      barsContainer.appendChild(bar);
+      // Index Tag on Bottom
+      const idxSpan = document.createElement('span');
+      idxSpan.className = 'bar-index';
+      idxSpan.textContent = `#${i}`;
+
+      // Floating Pointer Badge
+      const pointerSpan = document.createElement('span');
+      pointerSpan.className = 'pointer-badge';
+      pointerSpan.id = `pointer-${i}`;
+
+      pillar.appendChild(bar);
+      pillar.appendChild(idxSpan);
+      pillar.appendChild(pointerSpan);
+
+      barsContainer.appendChild(pillar);
+    }
+
+    // Dynamic gap based on count
+    if (arraySize <= 12) {
+      barsContainer.style.gap = '16px';
+    } else if (arraySize <= 25) {
+      barsContainer.style.gap = '8px';
+    } else {
+      barsContainer.style.gap = '4px';
     }
   }
 
-  function updateBar(index, value) {
-    const bar = barsContainer.children[index];
-    if (!bar) return;
+  function updatePillar(index, value) {
+    const pillar = barsContainer.children[index];
+    if (!pillar) return;
 
     array[index] = value;
-    bar.dataset.value = value;
-    const maxVal = Math.max(...array, 100);
-    const heightPercent = (value / maxVal) * 92 + 6;
-    bar.style.height = `${heightPercent}%`;
+    const bar = pillar.querySelector('.bar-element');
+    const numSpan = pillar.querySelector('.bar-number');
 
-    const valSpan = bar.querySelector('.bar-val');
-    if (valSpan) {
-      valSpan.textContent = value;
+    if (bar && numSpan) {
+      bar.dataset.value = value;
+      numSpan.textContent = value;
+      const maxVal = Math.max(...array, 100);
+      const heightPercent = (value / maxVal) * 82 + 10;
+      bar.style.height = `${heightPercent}%`;
     }
   }
 
-  function swapBars(i, j) {
+  function swapPillars(i, j) {
     const valI = array[i];
     const valJ = array[j];
-    updateBar(i, valJ);
-    updateBar(j, valI);
+    updatePillar(i, valJ);
+    updatePillar(j, valI);
   }
 
-  // Sorting Control
+  // Pointer Visualizer Engine
+  function updatePointers(pivot = null, i = null, j = null) {
+    activePivotIdx = pivot;
+    activeI = i;
+    activeJ = j;
+
+    for (let idx = 0; idx < arraySize; idx++) {
+      const pointer = document.getElementById(`pointer-${idx}`);
+      if (!pointer) continue;
+
+      if (idx === pivot) {
+        pointer.className = 'pointer-badge pivot-tag show';
+        pointer.textContent = '👑 PIVOT';
+      } else if (idx === j) {
+        pointer.className = 'pointer-badge j-tag show';
+        pointer.textContent = `🔎 j=${idx}`;
+      } else if (idx === i) {
+        pointer.className = 'pointer-badge i-tag show';
+        pointer.textContent = `👆 i=${idx}`;
+      } else {
+        pointer.className = 'pointer-badge';
+        pointer.textContent = '';
+      }
+    }
+  }
+
+  function clearPointers() {
+    activePivotIdx = null;
+    activeI = null;
+    activeJ = null;
+    for (let idx = 0; idx < arraySize; idx++) {
+      const pointer = document.getElementById(`pointer-${idx}`);
+      if (pointer) {
+        pointer.className = 'pointer-badge';
+        pointer.textContent = '';
+      }
+    }
+  }
+
+  // Sorting Control Loop
   function initGenerator() {
     const algoName = algoSelect.value;
     const algoFunc = window.Algorithms[algoName];
@@ -233,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
     isPaused = true;
     updatePauseButton(true);
     stopTimer();
-    statusText.textContent = 'Sorting paused. Click Resume or Step.';
+    statusText.textContent = 'Paused. Step forward or click Resume.';
     statusBeacon.classList.remove('busy');
   }
 
@@ -276,10 +350,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (step.description) {
       statusText.textContent = step.description;
+      codeHudDesc.textContent = step.description;
+    }
+
+    if (step.codeLine) {
+      codeHudLine.textContent = step.codeLine;
     }
 
     const minVal = 10;
-    const maxVal = 100;
+    const maxVal = 99;
+
+    // Handle range highlights
+    if (step.low !== undefined && step.high !== undefined) {
+      Array.from(barsContainer.children).forEach((pillar, idx) => {
+        if (idx >= step.low && idx <= step.high) {
+          pillar.classList.add('active-range');
+        } else {
+          pillar.classList.remove('active-range');
+        }
+      });
+    }
+
+    // Update pointers if provided
+    if (step.pivot !== undefined || step.i !== undefined || step.j !== undefined) {
+      updatePointers(
+        step.pivot !== undefined ? step.pivot : activePivotIdx,
+        step.i !== undefined ? step.i : activeI,
+        step.j !== undefined ? step.j : activeJ
+      );
+    }
 
     switch (step.type) {
       case 'compare': {
@@ -287,15 +386,15 @@ document.addEventListener('DOMContentLoaded', () => {
         statComparisons.textContent = comparisons.toLocaleString();
 
         const [i, j] = step.indices;
-        const bar1 = barsContainer.children[i];
-        const bar2 = barsContainer.children[j];
+        const bar1 = getBar(i);
+        const bar2 = getBar(j);
 
         if (bar1) bar1.classList.add('comparing');
         if (bar2) bar2.classList.add('comparing');
 
         const val1 = array[i] || 50;
         const val2 = array[j] || 50;
-        window.soundEngine.playNote(Math.max(val1, val2), minVal, maxVal, Math.min(60, calculateDelay(animationSpeed)));
+        window.soundEngine.playNote(Math.max(val1, val2), minVal, maxVal, Math.min(80, calculateDelay(animationSpeed)));
         break;
       }
 
@@ -304,10 +403,10 @@ document.addEventListener('DOMContentLoaded', () => {
         statSwaps.textContent = swaps.toLocaleString();
 
         const [i, j] = step.indices;
-        swapBars(i, j);
+        swapPillars(i, j);
 
-        const bar1 = barsContainer.children[i];
-        const bar2 = barsContainer.children[j];
+        const bar1 = getBar(i);
+        const bar2 = getBar(j);
         if (bar1) bar1.classList.add('swapping');
         if (bar2) bar2.classList.add('swapping');
 
@@ -319,37 +418,34 @@ document.addEventListener('DOMContentLoaded', () => {
         swaps++;
         statSwaps.textContent = swaps.toLocaleString();
 
-        updateBar(step.index, step.value);
-        const bar = barsContainer.children[step.index];
+        updatePillar(step.index, step.value);
+        const bar = getBar(step.index);
         if (bar) bar.classList.add('swapping');
 
-        window.soundEngine.playNote(step.value, minVal, maxVal, 45, 'triangle');
+        window.soundEngine.playNote(step.value, minVal, maxVal, 50, 'triangle');
         break;
       }
 
       case 'pivot': {
-        currentPivotIndex = step.index;
-        const pivotBar = barsContainer.children[step.index];
+        activePivotIdx = step.index;
+        const pivotBar = getBar(step.index);
         if (pivotBar) pivotBar.classList.add('pivot');
-        window.soundEngine.playNote(step.value, minVal, maxVal, 50, 'sawtooth');
+        updatePointers(activePivotIdx, activeI, activeJ);
+        window.soundEngine.playPivotChime(step.value, minVal, maxVal);
         break;
       }
 
       case 'clear-pivot': {
-        currentPivotIndex = null;
-        const existingPivot = barsContainer.querySelector('.bar.pivot');
+        activePivotIdx = null;
+        const existingPivot = barsContainer.querySelector('.bar-element.pivot');
         if (existingPivot) existingPivot.classList.remove('pivot');
-        break;
-      }
-
-      case 'range': {
-        // Optional range spotlight
+        updatePointers(null, activeI, activeJ);
         break;
       }
 
       case 'mark-sorted': {
         step.indices.forEach(idx => {
-          const bar = barsContainer.children[idx];
+          const bar = getBar(idx);
           if (bar) bar.classList.add('sorted');
         });
         break;
@@ -357,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       case 'slice-merged': {
         step.indices.forEach(idx => {
-          const bar = barsContainer.children[idx];
+          const bar = getBar(idx);
           if (bar) {
             bar.classList.add('sorted');
             setTimeout(() => {
@@ -369,10 +465,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       case 'finish': {
-        // Will be picked up by finishSorting
         break;
       }
     }
+  }
+
+  function getBar(index) {
+    const pillar = barsContainer.children[index];
+    return pillar ? pillar.querySelector('.bar-element') : null;
   }
 
   async function finishSorting() {
@@ -382,34 +482,44 @@ document.addEventListener('DOMContentLoaded', () => {
     stopTimer();
 
     clearTemporaryStyles();
+    clearPointers();
     statusBeacon.classList.remove('busy');
-    statusText.textContent = `Completed! Processed ${comparisons.toLocaleString()} comparisons and ${swaps.toLocaleString()} swaps.`;
+    statusText.textContent = `Completed! Total Comparisons: ${comparisons.toLocaleString()} | Swaps: ${swaps.toLocaleString()}`;
+    codeHudLine.textContent = `// Done: Array completely sorted in ascending order`;
+    codeHudDesc.textContent = `All elements verified`;
 
     setControlsState(false);
     btnPause.disabled = true;
     updatePauseButton(false);
 
-    // Green Victory Sweep Animation across all bars
-    const bars = Array.from(barsContainer.children);
-    for (let i = 0; i < bars.length; i++) {
-      bars[i].classList.add('sorted');
-      window.soundEngine.playNote(array[i], 10, 100, 40, 'sine');
-      await new Promise(r => setTimeout(r, Math.max(12, 400 / bars.length)));
+    // Dynamic wave sweep ripple
+    const pillars = Array.from(barsContainer.children);
+    for (let i = 0; i < pillars.length; i++) {
+      const bar = pillars[i].querySelector('.bar-element');
+      if (bar) {
+        bar.classList.add('sorted');
+        bar.style.transform = 'translateY(-12px) scale(1.05)';
+        setTimeout(() => {
+          bar.style.transform = 'none';
+        }, 250);
+      }
+      window.soundEngine.playNote(array[i], 10, 100, 50, 'sine');
+      await new Promise(r => setTimeout(r, Math.max(25, 300 / pillars.length)));
     }
 
     await window.soundEngine.playVictorySweep();
   }
 
   function clearTemporaryStyles() {
-    const comparings = barsContainer.querySelectorAll('.bar.comparing');
+    const comparings = barsContainer.querySelectorAll('.bar-element.comparing');
     comparings.forEach(el => el.classList.remove('comparing'));
 
-    const swappings = barsContainer.querySelectorAll('.bar.swapping');
+    const swappings = barsContainer.querySelectorAll('.bar-element.swapping');
     swappings.forEach(el => el.classList.remove('swapping'));
 
-    // Preserve pivot if still active
-    if (currentPivotIndex !== null) {
-      const pivotBar = barsContainer.children[currentPivotIndex];
+    // Reapply pivot if still active
+    if (activePivotIdx !== null) {
+      const pivotBar = getBar(activePivotIdx);
       if (pivotBar && !pivotBar.classList.contains('pivot')) {
         pivotBar.classList.add('pivot');
       }
@@ -420,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
     isSorting = false;
     isPaused = false;
     activeGenerator = null;
-    currentPivotIndex = null;
+    clearPointers();
     stopTimer();
 
     comparisons = 0;
@@ -444,9 +554,12 @@ document.addEventListener('DOMContentLoaded', () => {
     statSwaps.textContent = '0';
     statTime.textContent = '0.00s';
 
-    Array.from(barsContainer.children).forEach(b => {
-      b.className = 'bar';
+    Array.from(barsContainer.children).forEach(pillar => {
+      pillar.classList.remove('active-range');
+      const bar = pillar.querySelector('.bar-element');
+      if (bar) bar.className = 'bar-element';
     });
+    clearPointers();
   }
 
   function setControlsState(sortingActive) {
@@ -488,14 +601,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function calculateDelay(speedVal) {
-    // Map slider 5..150 to delay: 5 -> 180ms, 150 -> 2ms
-    return Math.max(2, Math.round(190 - (speedVal * 1.25)));
+    // 5 -> 300ms (slow teaching), 150 -> 4ms (turbo)
+    return Math.max(4, Math.round(320 - (speedVal * 2.1)));
   }
 
   function updateSpeedLabel(val) {
-    if (val < 35) speedValDisplay.textContent = 'Slow';
-    else if (val < 90) speedValDisplay.textContent = 'Medium';
-    else if (val < 135) speedValDisplay.textContent = 'Fast';
+    if (val < 25) speedValDisplay.textContent = 'Slow-Mo';
+    else if (val < 60) speedValDisplay.textContent = 'Teaching';
+    else if (val < 110) speedValDisplay.textContent = 'Normal';
     else speedValDisplay.textContent = 'Turbo ⚡';
   }
 
@@ -509,15 +622,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (algo === 'quickSort') {
       if (dataset === 'reversed' || dataset === 'sorted') {
         statComplexity.textContent = 'O(n²) [Worst Case!]';
-        statComplexity.style.color = '#ef4444';
+        statComplexity.style.color = '#ff3366';
       } else {
         statComplexity.textContent = 'O(n log n) [Avg]';
-        statComplexity.style.color = '#c084fc';
+        statComplexity.style.color = '#a855f7';
       }
     } else if (algo === 'quickSortRandom') {
-      statComplexity.textContent = 'O(n log n) [Expected]';
+      statComplexity.textContent = 'O(n log n) [Safe]';
       statComplexity.style.color = '#10b981';
     }
   }
 });
-

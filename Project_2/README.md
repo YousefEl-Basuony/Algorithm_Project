@@ -15,8 +15,7 @@ The execution time was measured for input sizes ($n$) scaling from $10^3$ up to 
 
 ## 3. Empirical Analysis & Graph Models
 
-> **[ 📌 قم بوضع صورة الرسم البياني `divide_and_conquer_analysis.png` هنا ]**
-
+ 
 ### Merge Sort Observations: $O(n \log n)$
 As seen in the left graph, Merge Sort's execution time grows identically regardless of the input data's initial state (Random, Sorted, or Reversed). It strictly follows the theoretical $O(n \log n)$ curve. This confirms that Merge Sort does not suffer from worst-case data permutations, though it consistently requires $O(n)$ auxiliary space.
 

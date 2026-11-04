@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="100%" height="auto">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07090e" />
+      <stop offset="50%" stop-color="#0c111d" />
+      <stop offset="100%" stop-color="#06080d" />
+    </linearGradient>
+
+    <!-- Cyan Glow -->
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(56, 189, 248, 0.15)" />
+      <stop offset="100%" stop-color="transparent" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="340" rx="16" fill="url(#bgGrad)" stroke="#1e293b" stroke-width="2" />
+  <circle cx="600" cy="170" r="280" fill="url(#centerGlow)" />
+
+  <!-- Subtle Grid Lines -->
+  <g stroke="rgba(255, 255, 255, 0.03)" stroke-width="1">
+    <line x1="100" y1="0" x2="100" y2="340" />
+    <line x1="200" y1="0" x2="200" y2="340" />
+    <line x1="300" y1="0" x2="300" y2="340" />
+    <line x1="400" y1="0" x2="400" y2="340" />
+    <line x1="500" y1="0" x2="500" y2="340" />
+    <line x1="600" y1="0" x2="600" y2="340" />
+    <line x1="700" y1="0" x2="700" y2="340" />
+    <line x1="800" y1="0" x2="800" y2="340" />
+    <line x1="900" y1="0" x2="900" y2="340" />
+    <line x1="1000" y1="0" x2="1000" y2="340" />
+    <line x1="1100" y1="0" x2="1100" y2="340" />
+    <line x1="0" y1="80" x2="1200" y2="80" />
+    <line x1="0" y1="170" x2="1200" y2="170" />
+    <line x1="0" y1="260" x2="1200" y2="260" />
+  </g>
+
+  <!-- Geometric Decorative Tree Branches Left -->
+  <g stroke="rgba(56, 189, 248, 0.2)" stroke-width="2" fill="none">
+    <path d="M 160 90 L 100 160 M 160 90 L 220 160" />
+    <path d="M 100 160 L 70 230 M 100 160 L 130 230" />
+    <path d="M 220 160 L 190 230 M 220 160 L 250 230" />
+    <circle cx="160" cy="90" r="14" fill="#0c4a6e" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="100" cy="160" r="11" fill="#78350f" stroke="#f59e0b" stroke-width="2" />
+    <circle cx="220" cy="160" r="11" fill="#581c87" stroke="#c084fc" stroke-width="2" />
+    <circle cx="70" cy="230" r="8" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
+    <circle cx="130" cy="230" r="8" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
+    <circle cx="190" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+    <circle cx="250" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+  </g>
+
+  <!-- Geometric Decorative Tree Branches Right -->
+  <g stroke="rgba(16, 185, 129, 0.2)" stroke-width="2" fill="none">
+    <path d="M 1040 90 L 980 160 M 1040 90 L 1100 160" />
+    <path d="M 980 160 L 950 230 M 980 160 L 1010 230" />
+    <path d="M 1100 160 L 1070 230 M 1100 160 L 1130 230" />
+    <circle cx="1040" cy="90" r="14" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+    <circle cx="980" cy="160" r="11" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+    <circle cx="1100" cy="160" r="11" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+    <circle cx="950" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="1010" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="1070" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="1130" cy="230" r="8" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+  </g>
+
+  <!-- Main Central Title -->
+  <g text-anchor="middle" font-family="'Inter', -apple-system, sans-serif">
+    <!-- Super-header Badge -->
+    <rect x="500" y="55" width="200" height="28" rx="14" fill="rgba(56, 189, 248, 0.1)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1" />
+    <text x="600" y="74" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1.5" text-transform="uppercase">INTERACTIVE ALGORITHM LAB</text>
+
+    <!-- Main Title -->
+    <text x="600" y="145" fill="#f8fafc" font-size="44" font-weight="900" letter-spacing="-1">
+      HEAP SORT <tspan fill="url(#cyanGlow)">VISUALIZER</tspan>
+    </text>
+
+    <!-- Subtitle -->
+    <text x="600" y="185" fill="#94a3b8" font-size="16" font-weight="500" letter-spacing="-0.2">
+      Dual Binary Tree &amp; Array Synchronized Animation with Micro-Step Pointer Tracking
+    </text>
+
+    <!-- Feature Pills -->
+    <g transform="translate(600, 240)">
+      <g transform="translate(-240, 0)">
+        <rect x="-65" y="-14" width="130" height="28" rx="6" fill="#0c4a6e" stroke="#38bdf8" stroke-width="1" />
+        <text y="5" fill="#38bdf8" font-size="12" font-weight="700">Root i Pointer</text>
+      </g>
+      <g transform="translate(-80, 0)">
+        <rect x="-65" y="-14" width="130" height="28" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="1" />
+        <text y="5" fill="#f59e0b" font-size="12" font-weight="700">Left l Pointer</text>
+      </g>
+      <g transform="translate(80, 0)">
+        <rect x="-65" y="-14" width="130" height="28" rx="6" fill="#581c87" stroke="#c084fc" stroke-width="1" />
+        <text y="5" fill="#c084fc" font-size="12" font-weight="700">Right r Pointer</text>
+      </g>
+      <g transform="translate(240, 0)">
+        <rect x="-70" y="-14" width="140" height="28" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="1" />
+        <text y="5" fill="#10b981" font-size="12" font-weight="700">🔒 Sorted Region</text>
+      </g>
+    </g>
+
+    <!-- Footer Complexity Badge -->
+    <text x="600" y="295" fill="#64748b" font-size="13" font-family="'JetBrains Mono', monospace">
+      Time: <tspan fill="#38bdf8" font-weight="700">O(N log N)</tspan> &nbsp;•&nbsp; Space: <tspan fill="#10b981" font-weight="700">O(1) Aux</tspan> &nbsp;•&nbsp; Build: <tspan fill="#f59e0b" font-weight="700">O(N)</tspan>
+    </text>
+  </g>
+</svg>
+

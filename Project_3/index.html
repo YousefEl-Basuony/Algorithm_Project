@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort Visualizer | Interactive Binary Tree & Array Animation</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for crisp modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Global Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="5" r="3"></circle>
+                        <circle cx="6" cy="19" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <path d="M12 8v4"></path>
+                        <path d="M6 16l4-4"></path>
+                        <path d="M18 16l-4-4"></path>
+                    </svg>
+                </div>
+                <div class="brand-title">
+                    <span>Heap Sort Visualizer</span>
+                    <span class="badge-complexity">O(N log N)</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="btnSoundToggle" class="icon-btn" title="Toggle Sound Effects (Key: M)">
+                    <span id="soundIcon">🔊</span>
+                    <span id="soundText">Sound ON</span>
+                </button>
+                <button id="btnThemeToggle" class="icon-btn" title="Toggle Dark/Light Mode">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button id="btnHelpModal" class="icon-btn" title="Keyboard Shortcuts & Help (Key: ?)">
+                    <span>⌨️ Shortcuts</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls Toolbar -->
+    <section class="toolbar">
+        <div class="toolbar-inner">
+            <!-- Left Group: Data presets -->
+            <div class="toolbar-group">
+                <label for="presetSelect" style="font-size:0.8rem; color:var(--text-secondary); font-weight:600;">Data:</label>
+                <select id="presetSelect" class="select-custom">
+                    <option value="random15" selected>Random (15 items - Height 4)</option>
+                    <option value="random7">Random (7 items - Height 3)</option>
+                    <option value="random31">Random (31 items - Height 5)</option>
+                    <option value="nearlySorted">Nearly Sorted</option>
+                    <option value="reverse">Reverse Sorted (Worst Case)</option>
+                    <option value="fewUnique">Few Unique Elements</option>
+                    <option value="custom">Custom Array...</option>
+                </select>
+
+                <label for="heapModeSelect" style="font-size:0.8rem; color:var(--text-secondary); font-weight:600; margin-left:8px;">Mode:</label>
+                <select id="heapModeSelect" class="select-custom">
+                    <option value="max" selected>Max-Heap (Ascending ↗)</option>
+                    <option value="min">Min-Heap (Descending ↘)</option>
+                </select>
+
+                <button id="btnRandomize" class="btn-secondary" title="Generate New Numbers">
+                    <span>🎲 Shuffle</span>
+                </button>
+            </div>
+
+            <!-- Middle Group: Playback Controls -->
+            <div class="toolbar-group">
+                <button id="btnFirst" class="btn-secondary" title="First Step (Home)">⏮</button>
+                <button id="btnPrev" class="btn-secondary" title="Previous Step (Left Arrow)">◀ Step</button>
+                <button id="btnPlay" class="btn-primary" title="Play / Pause (Space)">
+                    <span id="playIcon">▶</span>
+                    <span id="playText">Play</span>
+                </button>
+                <button id="btnNext" class="btn-secondary" title="Next Step (Right Arrow)">Step ▶</button>
+                <button id="btnLast" class="btn-secondary" title="Jump to Complete (End)">⏭</button>
+                <button id="btnReset" class="btn-secondary" title="Reset (Key: R)">↺ Reset</button>
+            </div>
+
+            <!-- Right Group: Speed Slider -->
+            <div class="toolbar-group">
+                <div class="speed-control">
+                    <span>Speed:</span>
+                    <input type="range" id="speedSlider" class="speed-slider" min="0.25" max="3" step="0.25" value="1">
+                    <span id="speedValue" style="font-family:var(--font-mono); font-weight:700;">1.0x</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Scrubber -->
+    <div class="timeline-bar-wrapper">
+        <div class="timeline-inner">
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">TIMELINE:</span>
+            <input type="range" id="timelineScrubber" class="timeline-scrubber" min="0" max="0" value="0">
+            <div id="stepCounter" class="step-indicator">Step 0 / 0</div>
+        </div>
+    </div>
+
+    <!-- Live Narration & Legend Banner -->
+    <section class="narrative-banner">
+        <div class="narrative-inner">
+            <div class="narrative-content">
+                <div id="narrativeIcon" class="narrative-icon">📌</div>
+                <div>
+                    <div id="narrativeTitle" class="narrative-title">Welcome to Heap Sort Visualizer</div>
+                    <div id="narrativeDesc" class="narrative-desc">Load a dataset or press Play to animate the complete binary tree and array.</div>
+                    <div id="narrativeDescAr" class="narrative-desc-ar">مرحباً بك في أداة المحاكاة التفاعلية لخوارزمية ترتيب الـ Heap. اضغط Play لبدء الرسوم المتحركة.</div>
+                </div>
+            </div>
+
+            <div class="pointer-legend-bar">
+                <span class="legend-tag tag-i">i : Root/Parent</span>
+                <span class="legend-tag tag-l">l = 2i + 1 : Left</span>
+                <span class="legend-tag tag-r">r = 2i + 2 : Right</span>
+                <span class="legend-tag tag-max" id="legendTargetTag">max : Candidate</span>
+                <span class="legend-tag tag-sorted">🔒 : Sorted Region</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dual Split Workspace -->
+    <main class="workspace">
+        <!-- Visualizers Column (Tree + Array) -->
+        <div class="visualizers-column">
+            <!-- Tree Card -->
+            <div class="viz-card">
+                <div class="viz-card-header">
+                    <div class="viz-card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="5" r="3"></circle>
+                            <circle cx="6" cy="19" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <path d="M12 8v4M6 16l4-4M18 16l-4-4"></path>
+                        </svg>
+                        <span>Binary Tree Representation</span>
+                    </div>
+                    <span class="viz-card-tag">Interactive SVG • Hover for node details</span>
+                </div>
+                <div class="tree-container">
+                    <svg id="treeSvg" class="tree-svg"></svg>
+                </div>
+            </div>
+
+            <!-- Synchronized Array Card -->
+            <div class="viz-card">
+                <div class="viz-card-header">
+                    <div class="viz-card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="10" rx="2"></rect>
+                            <line x1="7" y1="7" x2="7" y2="17"></line>
+                            <line x1="12" y1="7" x2="12" y2="17"></line>
+                            <line x1="17" y1="7" x2="17" y2="17"></line>
+                        </svg>
+                        <span>Synchronized Array & Bar View</span>
+                    </div>
+                    <span class="viz-card-tag">Pointers i, l, r & Sorted Region</span>
+                </div>
+                <div id="arrayContainer" class="array-container">
+                    <!-- Dynamic Array Strip rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspector Column (Formulas + Pseudocode + Stats) -->
+        <aside class="inspector-column">
+            <!-- Formula HUD -->
+            <div class="inspector-card">
+                <div class="inspector-header">
+                    <span>📐 Tree Math & Indices</span>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Zero-indexed</span>
+                </div>
+                <div class="formula-body">
+                    <div class="formula-row">
+                        <span class="formula-label">Left Child:</span>
+                        <span id="formulaLeft" class="formula-calc">left = 2i + 1</span>
+                    </div>
+                    <div class="formula-row">
+                        <span class="formula-label">Right Child:</span>
+                        <span id="formulaRight" class="formula-calc">right = 2i + 2</span>
+                    </div>
+                    <div class="formula-row">
+                        <span class="formula-label">Parent Node:</span>
+                        <span id="formulaParent" class="formula-calc">parent = ⌊(i - 1)/2⌋</span>
+                    </div>
+                    <div class="formula-row">
+                        <span class="formula-label">Leaf Check:</span>
+                        <span id="formulaLeaf" class="formula-calc">i ≥ ⌊n/2⌋ (Leaves)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pseudocode Sync -->
+            <div class="inspector-card">
+                <div class="inspector-header">
+                    <span>📜 Algorithm Pseudocode</span>
+                    <span id="pseudocodePhaseBadge" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--color-i);">Phase 1</span>
+                </div>
+                <div id="pseudocodeContainer" class="pseudocode-container">
+                    <div class="code-line" data-line="1"><span class="code-line-num">1</span><span>function heapSort(arr):</span></div>
+                    <div class="code-line" data-line="2"><span class="code-line-num">2</span><span>&nbsp;&nbsp;n = arr.length</span></div>
+                    <div class="code-line" data-line="3"><span class="code-line-num">3</span><span>&nbsp;&nbsp;// Phase 1: Build Heap</span></div>
+                    <div class="code-line" data-line="4"><span class="code-line-num">4</span><span>&nbsp;&nbsp;for i = ⌊n/2⌋ - 1 down to 0:</span></div>
+                    <div class="code-line" data-line="5"><span class="code-line-num">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;heapify(arr, n, i)</span></div>
+                    <div class="code-line" data-line="6"><span class="code-line-num">6</span><span>&nbsp;&nbsp;// Phase 2: In-place Extraction</span></div>
+                    <div class="code-line" data-line="7"><span class="code-line-num">7</span><span>&nbsp;&nbsp;for end = n - 1 down to 1:</span></div>
+                    <div class="code-line" data-line="8"><span class="code-line-num">8</span><span>&nbsp;&nbsp;&nbsp;&nbsp;swap(arr[0], arr[end])</span></div>
+                    <div class="code-line" data-line="9"><span class="code-line-num">9</span><span>&nbsp;&nbsp;&nbsp;&nbsp;// Sorted region grows; heap shrinks</span></div>
+                    <div class="code-line" data-line="10"><span class="code-line-num">10</span><span>&nbsp;&nbsp;&nbsp;&nbsp;heapify(arr, end, 0)</span></div>
+                    <div class="code-line" data-line="11"><span class="code-line-num">11</span><span>function heapify(arr, heapSize, i):</span></div>
+                    <div class="code-line" data-line="12"><span class="code-line-num">12</span><span>&nbsp;&nbsp;largest = i, l = 2i + 1, r = 2i + 2</span></div>
+                    <div class="code-line" data-line="13"><span class="code-line-num">13</span><span>&nbsp;&nbsp;if l &lt; heapSize &amp;&amp; arr[l] &gt; arr[largest]:</span></div>
+                    <div class="code-line" data-line="14"><span class="code-line-num">14</span><span>&nbsp;&nbsp;if r &lt; heapSize &amp;&amp; arr[r] &gt; arr[largest]:</span></div>
+                    <div class="code-line" data-line="15"><span class="code-line-num">15</span><span>&nbsp;&nbsp;if largest != i:</span></div>
+                    <div class="code-line" data-line="16"><span class="code-line-num">16</span><span>&nbsp;&nbsp;&nbsp;&nbsp;swap(arr[i], arr[largest])</span></div>
+                    <div class="code-line" data-line="17"><span class="code-line-num">17</span><span>&nbsp;&nbsp;&nbsp;&nbsp;heapify(arr, heapSize, largest)</span></div>
+                </div>
+            </div>
+
+            <!-- Metrics Card -->
+            <div class="inspector-card">
+                <div class="inspector-header">
+                    <span>⚡ Live Execution Metrics</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Comparisons</div>
+                        <div id="statComparisons" class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Swaps</div>
+                        <div id="statSwaps" class="stat-val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Time Complexity</div>
+                        <div class="stat-val" style="font-size:0.95rem; color:#38bdf8;">O(N log N)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Space Complexity</div>
+                        <div class="stat-val" style="font-size:0.95rem; color:#10b981;">O(1) Aux</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Floating Node Hover Tooltip -->
+    <div id="floatingTooltip" class="floating-tooltip"></div>
+
+    <!-- Shortcuts & Help Modal -->
+    <div id="helpModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">
+                <span>Keyboard Shortcuts & Guide</span>
+                <button id="btnCloseHelp" class="icon-btn" style="padding:4px 8px;">✕</button>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+                Navigate and control the Heap Sort animation effortlessly using your keyboard:
+            </p>
+            <div class="shortcut-row">
+                <span>Play / Pause</span>
+                <span class="kbd-key">Space</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Step Forward</span>
+                <span class="kbd-key">Right Arrow / L</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Step Backward</span>
+                <span class="kbd-key">Left Arrow / J</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Reset to Start</span>
+                <span class="kbd-key">R</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Toggle Sound Effects</span>
+                <span class="kbd-key">M</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Toggle Dark / Light Theme</span>
+                <span class="kbd-key">T</span>
+            </div>
+            <div class="shortcut-row">
+                <span>Shuffle / New Array</span>
+                <span class="kbd-key">S</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Array Input Modal -->
+    <div id="customInputModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">
+                <span>Enter Custom Array</span>
+                <button id="btnCloseCustom" class="icon-btn" style="padding:4px 8px;">✕</button>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">
+                Enter numbers (from 3 up to 31 items) separated by commas or spaces:
+            </p>
+            <input type="text" id="customNumbersInput" class="input-custom" style="width:100%; margin-bottom:10px;" placeholder="e.g. 45, 12, 89, 34, 67, 23, 90">
+            <div id="customInputError" style="color:#ef4444; font-size:0.75rem; margin-bottom:12px; display:none;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button id="btnCancelCustom" class="btn-secondary">Cancel</button>
+                <button id="btnApplyCustom" class="btn-primary">Apply & Visualize</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/soundEffects.js"></script>
+    <script src="js/heapSortEngine.js"></script>
+    <script src="js/treeRenderer.js"></script>
+    <script src="js/arrayRenderer.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+

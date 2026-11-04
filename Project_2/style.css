@@ -1,14 +1,14 @@
 /* ==========================================================================
    AlgoScope // Ultimate Sorting Visualizer Stylesheet
-   Theme: Next-Gen Cyberpunk Glassmorphism / Neon Dark
+   Theme: Next-Gen Cyberpunk Glassmorphism / Neon Dark & Empirical Analytics
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   --bg-deep: #060911;
-  --bg-card: rgba(13, 20, 36, 0.78);
-  --bg-card-hover: rgba(20, 31, 56, 0.9);
+  --bg-card: rgba(13, 20, 36, 0.82);
+  --bg-card-hover: rgba(20, 31, 56, 0.95);
   --border-glass: rgba(255, 255, 255, 0.09);
   --border-neon: rgba(0, 245, 212, 0.4);
 
@@ -85,7 +85,7 @@ body {
 
 header {
   border-bottom: 1px solid var(--border-glass);
-  background: rgba(6, 9, 17, 0.82);
+  background: rgba(6, 9, 17, 0.85);
   backdrop-filter: blur(20px);
   position: sticky;
   top: 0;
@@ -133,18 +133,12 @@ header {
 }
 
 .brand-title h1 {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.6px;
   display: flex;
   align-items: center;
   gap: 0.65rem;
-}
-
-.brand-title h1 span.highlight-gradient {
-  background: linear-gradient(120deg, #00f5d4, #38bdf8, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .badge-intermediate {
@@ -179,6 +173,35 @@ header {
 .brand-title p {
   font-size: 0.82rem;
   color: var(--text-sub);
+}
+
+.header-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tempo-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 245, 212, 0.08);
+  border: 1px solid rgba(0, 245, 212, 0.3);
+  color: var(--neon-cyan);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.tempo-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--neon-cyan);
+  animation: pulse-glow 1.5s infinite ease-in-out;
 }
 
 .btn-github {
@@ -267,7 +290,7 @@ select.custom-select {
   background: rgba(10, 16, 28, 0.95);
   color: var(--text-main);
   border: 1px solid var(--border-glass);
-  padding: 0.6rem 1rem;
+  padding: 0.65rem 1rem;
   border-radius: var(--radius-md);
   font-family: inherit;
   font-size: 0.9rem;
@@ -287,7 +310,7 @@ select.custom-select:hover, select.custom-select:focus {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  min-width: 160px;
+  min-width: 140px;
 }
 
 .slider-pill .slider-header {
@@ -333,7 +356,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   background: #fff;
 }
 
-/* Interactive Action Buttons */
+/* Action Buttons */
 .buttons-group {
   display: flex;
   align-items: center;
@@ -504,11 +527,11 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
 }
 
 /* ==========================================================================
-   Live Code Execution HUD (NEW - Explains every line in real time!)
+   Live Code Execution Line HUD
    ========================================================================== */
 
 .code-hud-banner {
-  background: rgba(10, 15, 26, 0.9);
+  background: rgba(10, 15, 26, 0.92);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
   padding: 0.85rem 1.4rem;
@@ -549,7 +572,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   align-items: center;
   gap: 0.5rem;
   color: var(--text-sub);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
 }
 
 .code-hud-right .step-desc {
@@ -634,10 +657,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
 .legend-color.swapping { background: var(--neon-pink); box-shadow: 0 0 8px rgba(255, 0, 127, 0.5); }
 .legend-color.sorted { background: var(--neon-emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
 
-/* ==========================================================================
-   The Bars Arena & Pillars (Optimized for 10 Elements & Scalable)
-   ========================================================================== */
-
+/* The Bars Arena */
 .bars-arena {
   flex: 1;
   min-height: 360px;
@@ -645,8 +665,8 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 12px; /* Generous gap for 10 elements */
-  padding: 2.5rem 1rem 3.5rem; /* Room for pointers at bottom & labels on top */
+  gap: 16px; /* Generous gap for 10 pillars */
+  padding: 2.5rem 1rem 3.5rem;
   position: relative;
   background: 
     radial-gradient(ellipse at bottom, rgba(0, 245, 212, 0.05) 0%, transparent 70%),
@@ -657,21 +677,21 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 
-/* Individual Pillar Wrapper */
+/* Pillar Column */
 .pillar-column {
   flex: 1;
   max-width: 90px;
-  min-width: 24px;
+  min-width: 28px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
   position: relative;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* The Bar Cylinder */
+/* The Bar Element */
 .bar-element {
   width: 100%;
   background: linear-gradient(180deg, var(--bar-base-top) 0%, var(--bar-base-mid) 50%, var(--bar-base-bottom) 100%);
@@ -686,15 +706,15 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   justify-content: flex-start;
   align-items: center;
   transition: 
-    height 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), 
-    background 0.2s ease, 
-    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.2s ease;
+    height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), 
+    background 0.25s ease, 
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
   user-select: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Number Tag on Top of Bar */
+/* Number Tag on Top */
 .bar-number {
   position: absolute;
   top: -34px;
@@ -710,10 +730,10 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   letter-spacing: -0.5px;
   pointer-events: none;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
-/* Index label below the baseline */
+/* Index Label */
 .bar-index {
   position: absolute;
   bottom: -28px;
@@ -726,7 +746,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   border-radius: 4px;
 }
 
-/* Floating Pointer Indicators below index */
+/* Floating Pointer Indicators */
 .pointer-badge {
   position: absolute;
   bottom: -62px;
@@ -739,7 +759,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   letter-spacing: 0.5px;
   opacity: 0;
   transform: translateY(6px);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   pointer-events: none;
   white-space: nowrap;
   z-index: 20;
@@ -771,11 +791,7 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   box-shadow: 0 0 14px rgba(0, 245, 212, 0.7);
 }
 
-/* ==========================================================================
-   State Classes & Dynamic Animations
-   ========================================================================== */
-
-/* 1. Comparing State */
+/* Dynamic State Styles (Tuned for Human Comprehension) */
 .bar-element.comparing {
   background: linear-gradient(180deg, var(--bar-compare-top) 0%, var(--bar-compare-mid) 50%, var(--bar-compare-bottom) 100%) !important;
   box-shadow: 
@@ -794,7 +810,6 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
 
-/* 2. Pivot State */
 .bar-element.pivot {
   background: linear-gradient(180deg, var(--bar-pivot-top) 0%, var(--bar-pivot-mid) 50%, var(--bar-pivot-bottom) 100%) !important;
   box-shadow: 
@@ -814,7 +829,6 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
 }
 
-/* 3. Swapping State */
 .bar-element.swapping {
   background: linear-gradient(180deg, var(--bar-swap-top) 0%, var(--bar-swap-mid) 50%, var(--bar-swap-bottom) 100%) !important;
   box-shadow: 
@@ -834,7 +848,6 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
 }
 
-/* 4. Sorted State */
 .bar-element.sorted {
   background: linear-gradient(180deg, var(--bar-sorted-top) 0%, var(--bar-sorted-mid) 50%, var(--bar-sorted-bottom) 100%) !important;
   box-shadow: 0 0 20px var(--bar-sorted-glow), inset 0 1px 2px #fff !important;
@@ -847,7 +860,6 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
 }
 
-/* 5. Subarray Active Border Focus */
 .pillar-column.active-range::after {
   content: '';
   position: absolute;
@@ -858,6 +870,255 @@ input[type="range"].custom-slider::-webkit-slider-thumb:hover {
   border: 1px dashed rgba(0, 245, 212, 0.4);
   border-radius: 8px;
   pointer-events: none;
+}
+
+/* ==========================================================================
+   📊 Advanced Performance Analytics Suite (NEW)
+   ========================================================================== */
+
+.analytics-suite {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.analytics-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.analytics-title h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.3px;
+}
+
+.analytics-badge {
+  background: rgba(0, 245, 212, 0.12);
+  border: 1px solid rgba(0, 245, 212, 0.4);
+  color: var(--neon-cyan);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.analytics-card {
+  background: rgba(10, 16, 28, 0.7);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.analytics-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.card-caption {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* Stat Bars */
+.stat-bar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stat-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.stat-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.stat-num.yellow { color: var(--neon-gold); }
+.stat-num.pink { color: var(--neon-pink); }
+.stat-num.cyan { color: var(--neon-cyan); }
+
+.stat-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.stat-bar-fill.yellow {
+  background: linear-gradient(90deg, #f59e0b, #fde047);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.stat-bar-fill.pink {
+  background: linear-gradient(90deg, #c026d3, #f472b6);
+  box-shadow: 0 0 10px rgba(217, 70, 239, 0.5);
+}
+
+.stat-bar-fill.cyan {
+  background: linear-gradient(90deg, #0284c7, #00f5d4);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.4);
+}
+
+/* Efficiency Box */
+.efficiency-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.efficiency-icon {
+  font-size: 1.8rem;
+}
+
+.efficiency-content h5 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.efficiency-content p {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+
+.metrics-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-glass);
+}
+
+.metric-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mini-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.mini-val {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+/* History List */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-clear {
+  background: none;
+  border: 1px solid var(--border-glass);
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.history-empty {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 0.75rem 0;
+  text-align: center;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.history-item .algo-tag {
+  font-weight: 700;
+  color: #fff;
+}
+
+.history-item .stats-tag {
+  color: var(--neon-cyan);
 }
 
 /* ==========================================================================
@@ -980,10 +1241,11 @@ footer a:hover {
   .control-deck { padding: 1rem; }
   .bars-arena { 
     height: 320px; 
-    gap: 6px;
+    gap: 8px;
     padding-bottom: 4rem;
   }
   .bar-number { font-size: 0.85rem; top: -28px; }
   .pointer-badge { font-size: 0.65rem; bottom: -54px; }
   .legend-group { display: none; }
+  .analytics-grid { grid-template-columns: 1fr; }
 }

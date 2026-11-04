@@ -1,6 +1,6 @@
 /**
- * Main Controller for Sorting Visualizer
- * Orchestrates DOM rendering, Generator execution, Sound, Pointers, and UI interactions.
+ * Main Controller for Sorting Visualizer & Empirical Analytics
+ * Orchestrates DOM rendering, Generator execution, Educational Tempo, and Real-time Statistics.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,14 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const datasetSelect = document.getElementById('dataset-select');
   const sizeSlider = document.getElementById('size-slider');
   const sizeValDisplay = document.getElementById('size-val');
-  const speedSlider = document.getElementById('speed-slider');
-  const speedValDisplay = document.getElementById('speed-val');
 
   const btnStart = document.getElementById('btn-start');
   const btnPause = document.getElementById('btn-pause');
   const btnStep = document.getElementById('btn-step');
   const btnShuffle = document.getElementById('btn-shuffle');
   const btnSound = document.getElementById('btn-sound');
+  const btnClearHistory = document.getElementById('btn-clear-history');
 
   const statComparisons = document.getElementById('stat-comparisons');
   const statSwaps = document.getElementById('stat-swaps');
@@ -29,10 +28,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const codeHudLine = document.getElementById('code-hud-line');
   const codeHudDesc = document.getElementById('code-hud-desc');
 
+  // Analytics Elements
+  const analyticsCompCount = document.getElementById('analytics-comp-count');
+  const analyticsCompBar = document.getElementById('analytics-comp-bar');
+  const analyticsSwapCount = document.getElementById('analytics-swap-count');
+  const analyticsSwapBar = document.getElementById('analytics-swap-bar');
+  const analyticsWorstCap = document.getElementById('analytics-worst-cap');
+
+  const efficiencyIcon = document.getElementById('efficiency-icon');
+  const efficiencyTitle = document.getElementById('efficiency-title');
+  const efficiencyDesc = document.getElementById('efficiency-desc');
+  const valTheoreticalLog = document.getElementById('val-theoretical-log');
+  const valTheoreticalQuad = document.getElementById('val-theoretical-quad');
+  const valEfficiencyDelta = document.getElementById('val-efficiency-delta');
+  const historyList = document.getElementById('history-list');
+
   // State
   let array = [];
   let arraySize = parseInt(sizeSlider.value, 10) || 10;
-  let animationSpeed = parseInt(speedSlider.value, 10);
+  
+  // Perfectly tuned educational pacing: 480ms per step
+  // Slow enough to clearly see pointer movements, bar elevations, and read code lines!
+  const EDUCATIONAL_DELAY = 480;
+
   let activeGenerator = null;
   let isSorting = false;
   let isPaused = false;
@@ -47,23 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeI = null;
   let activeJ = null;
 
+  // History Runs Array
+  let benchmarkHistory = [];
+
   // Initialize
-  updateSpeedLabel(animationSpeed);
   updateComplexityBadge();
+  updateTheoreticalCaps();
   generateArray();
 
   // Event Listeners
   sizeSlider.addEventListener('input', (e) => {
     arraySize = parseInt(e.target.value, 10);
     sizeValDisplay.textContent = arraySize;
+    updateTheoreticalCaps();
     if (!isSorting) {
       generateArray();
     }
-  });
-
-  speedSlider.addEventListener('input', (e) => {
-    animationSpeed = parseInt(e.target.value, 10);
-    updateSpeedLabel(animationSpeed);
   });
 
   datasetSelect.addEventListener('change', () => {
@@ -81,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
     resetState();
     generateArray();
     statusText.textContent = `Generated fresh array with ${arraySize} elements. Ready.`;
-    codeHudLine.textContent = `// Array randomized (${array.join(', ')})`;
-    codeHudDesc.textContent = `Ready to sort`;
+    codeHudLine.textContent = `// Array randomized: [${array.join(', ')}]`;
+    codeHudDesc.textContent = `Ready to sort at educational pace`;
   });
 
   btnStart.addEventListener('click', () => {
@@ -124,13 +141,18 @@ document.addEventListener('DOMContentLoaded', () => {
     btnSound.title = isMuted ? 'Sound Muted (Click to enable)' : 'Sound Enabled (Click to mute)';
   });
 
+  btnClearHistory.addEventListener('click', () => {
+    benchmarkHistory = [];
+    renderHistory();
+  });
+
   // Array Generation
   function generateArray() {
     resetState();
     const distribution = datasetSelect.value;
     array = [];
 
-    const minVal = 10;
+    const minVal = 12;
     const maxVal = 99;
 
     if (distribution === 'random') {
@@ -152,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let i = 0; i < arraySize; i++) {
         array.push(Math.round(minVal + i * step));
       }
-      // Swap 1 or 2 adjacent elements
       const numSwaps = Math.max(1, Math.floor(arraySize * 0.15));
       for (let s = 0; s < numSwaps; s++) {
         const idx = Math.floor(Math.random() * (arraySize - 1));
@@ -174,26 +195,22 @@ document.addEventListener('DOMContentLoaded', () => {
       pillar.className = 'pillar-column';
       pillar.dataset.index = i;
 
-      // The Bar Element
       const bar = document.createElement('div');
       bar.className = 'bar-element';
       bar.dataset.value = array[i];
 
-      const heightPercent = (array[i] / maxVal) * 82 + 10;
+      const heightPercent = (array[i] / maxVal) * 80 + 12;
       bar.style.height = `${heightPercent}%`;
 
-      // Value Tag on Top
       const numSpan = document.createElement('span');
       numSpan.className = 'bar-number';
       numSpan.textContent = array[i];
       bar.appendChild(numSpan);
 
-      // Index Tag on Bottom
       const idxSpan = document.createElement('span');
       idxSpan.className = 'bar-index';
       idxSpan.textContent = `#${i}`;
 
-      // Floating Pointer Badge
       const pointerSpan = document.createElement('span');
       pointerSpan.className = 'pointer-badge';
       pointerSpan.id = `pointer-${i}`;
@@ -205,10 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
       barsContainer.appendChild(pillar);
     }
 
-    // Dynamic gap based on count
     if (arraySize <= 12) {
       barsContainer.style.gap = '16px';
-    } else if (arraySize <= 25) {
+    } else if (arraySize <= 22) {
       barsContainer.style.gap = '8px';
     } else {
       barsContainer.style.gap = '4px';
@@ -227,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
       bar.dataset.value = value;
       numSpan.textContent = value;
       const maxVal = Math.max(...array, 100);
-      const heightPercent = (value / maxVal) * 82 + 10;
+      const heightPercent = (value / maxVal) * 80 + 12;
       bar.style.height = `${heightPercent}%`;
     }
   }
@@ -324,10 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await stepForward();
       if (result.done) break;
 
-      const delay = calculateDelay(animationSpeed);
-      if (delay > 0) {
-        await new Promise(r => setTimeout(r, delay));
-      }
+      // Steady human-comprehensible delay
+      await new Promise(r => setTimeout(r, EDUCATIONAL_DELAY));
     }
   }
 
@@ -360,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const minVal = 10;
     const maxVal = 99;
 
-    // Handle range highlights
     if (step.low !== undefined && step.high !== undefined) {
       Array.from(barsContainer.children).forEach((pillar, idx) => {
         if (idx >= step.low && idx <= step.high) {
@@ -371,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Update pointers if provided
     if (step.pivot !== undefined || step.i !== undefined || step.j !== undefined) {
       updatePointers(
         step.pivot !== undefined ? step.pivot : activePivotIdx,
@@ -383,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switch (step.type) {
       case 'compare': {
         comparisons++;
-        statComparisons.textContent = comparisons.toLocaleString();
+        updateAnalytics();
 
         const [i, j] = step.indices;
         const bar1 = getBar(i);
@@ -394,13 +406,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const val1 = array[i] || 50;
         const val2 = array[j] || 50;
-        window.soundEngine.playNote(Math.max(val1, val2), minVal, maxVal, Math.min(80, calculateDelay(animationSpeed)));
+        window.soundEngine.playNote(Math.max(val1, val2), minVal, maxVal, 90);
         break;
       }
 
       case 'swap': {
         swaps++;
-        statSwaps.textContent = swaps.toLocaleString();
+        updateAnalytics();
 
         const [i, j] = step.indices;
         swapPillars(i, j);
@@ -416,13 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       case 'overwrite': {
         swaps++;
-        statSwaps.textContent = swaps.toLocaleString();
+        updateAnalytics();
 
         updatePillar(step.index, step.value);
         const bar = getBar(step.index);
         if (bar) bar.classList.add('swapping');
 
-        window.soundEngine.playNote(step.value, minVal, maxVal, 50, 'triangle');
+        window.soundEngine.playNote(step.value, minVal, maxVal, 70, 'triangle');
         break;
       }
 
@@ -458,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bar.classList.add('sorted');
             setTimeout(() => {
               if (isSorting) bar.classList.remove('sorted');
-            }, 350);
+            }, 400);
           }
         });
         break;
@@ -475,6 +487,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return pillar ? pillar.querySelector('.bar-element') : null;
   }
 
+  // Update Statistical Metrics
+  function updateAnalytics() {
+    statComparisons.textContent = comparisons.toLocaleString();
+    statSwaps.textContent = swaps.toLocaleString();
+
+    const worstCap = (arraySize * (arraySize - 1)) / 2;
+    analyticsCompCount.textContent = `${comparisons} ops`;
+    analyticsSwapCount.textContent = `${swaps} ops`;
+
+    const compPercent = Math.min(100, (comparisons / worstCap) * 100);
+    const swapPercent = Math.min(100, (swaps / worstCap) * 100);
+
+    analyticsCompBar.style.width = `${compPercent}%`;
+    analyticsSwapBar.style.width = `${swapPercent}%`;
+  }
+
+  function updateTheoreticalCaps() {
+    const n = arraySize;
+    const theoreticalLog = Math.round(n * Math.log2(n));
+    const theoreticalQuad = (n * (n - 1)) / 2;
+
+    valTheoreticalLog.textContent = `~${theoreticalLog} ops`;
+    valTheoreticalQuad.textContent = `${theoreticalQuad} ops`;
+    analyticsWorstCap.textContent = `${theoreticalQuad} ops`;
+  }
+
   async function finishSorting() {
     isSorting = false;
     isPaused = false;
@@ -484,30 +522,99 @@ document.addEventListener('DOMContentLoaded', () => {
     clearTemporaryStyles();
     clearPointers();
     statusBeacon.classList.remove('busy');
-    statusText.textContent = `Completed! Total Comparisons: ${comparisons.toLocaleString()} | Swaps: ${swaps.toLocaleString()}`;
-    codeHudLine.textContent = `// Done: Array completely sorted in ascending order`;
+
+    const totalSeconds = ((accumulatedTime) / 1000).toFixed(2);
+    statusText.textContent = `Completed! ${comparisons} comparisons & ${swaps} swaps in ${totalSeconds}s.`;
+    codeHudLine.textContent = `// Done: Execution statistics compiled in Analytics panel`;
     codeHudDesc.textContent = `All elements verified`;
 
     setControlsState(false);
     btnPause.disabled = true;
     updatePauseButton(false);
 
-    // Dynamic wave sweep ripple
+    evaluateFinalEfficiency();
+    logBenchmarkRun(totalSeconds);
+
+    // Green Victory Ripple
     const pillars = Array.from(barsContainer.children);
     for (let i = 0; i < pillars.length; i++) {
       const bar = pillars[i].querySelector('.bar-element');
       if (bar) {
         bar.classList.add('sorted');
-        bar.style.transform = 'translateY(-12px) scale(1.05)';
+        bar.style.transform = 'translateY(-14px) scale(1.06)';
         setTimeout(() => {
           bar.style.transform = 'none';
-        }, 250);
+        }, 300);
       }
-      window.soundEngine.playNote(array[i], 10, 100, 50, 'sine');
-      await new Promise(r => setTimeout(r, Math.max(25, 300 / pillars.length)));
+      window.soundEngine.playNote(array[i], 10, 100, 60, 'sine');
+      await new Promise(r => setTimeout(r, Math.max(30, 320 / pillars.length)));
     }
 
     await window.soundEngine.playVictorySweep();
+  }
+
+  function evaluateFinalEfficiency() {
+    const n = arraySize;
+    const theoreticalLog = Math.round(n * Math.log2(n));
+    const theoreticalQuad = (n * (n - 1)) / 2;
+
+    const deltaPercent = Math.round(((comparisons - theoreticalLog) / theoreticalLog) * 100);
+    valEfficiencyDelta.textContent = deltaPercent > 0 ? `+${deltaPercent}%` : `${deltaPercent}%`;
+
+    if (comparisons >= theoreticalQuad * 0.85) {
+      efficiencyIcon.textContent = '🚨';
+      efficiencyTitle.textContent = 'O(n²) Worst-Case Trap Triggered!';
+      efficiencyTitle.style.color = 'var(--neon-crimson)';
+      efficiencyDesc.textContent = `Partition degenerate: required ${comparisons} comparisons (near the ${theoreticalQuad} theoretical ceiling).`;
+      valEfficiencyDelta.style.color = 'var(--neon-crimson)';
+    } else if (comparisons <= theoreticalLog * 1.35) {
+      efficiencyIcon.textContent = '⚡';
+      efficiencyTitle.textContent = 'Optimal Divide & Conquer!';
+      efficiencyTitle.style.color = 'var(--neon-emerald)';
+      efficiencyDesc.textContent = `Flawless balance: completed in only ${comparisons} comparisons, perfectly conforming to O(n log n).`;
+      valEfficiencyDelta.style.color = 'var(--neon-emerald)';
+    } else {
+      efficiencyIcon.textContent = '📈';
+      efficiencyTitle.textContent = 'Average Case Equilibrium';
+      efficiencyTitle.style.color = 'var(--neon-gold)';
+      efficiencyDesc.textContent = `Balanced partition: required ${comparisons} comparisons against theoretical ~${theoreticalLog} target.`;
+      valEfficiencyDelta.style.color = 'var(--neon-gold)';
+    }
+  }
+
+  function logBenchmarkRun(timeSec) {
+    const algoName = algoSelect.options[algoSelect.selectedIndex].text.split('(')[0].trim();
+    const dataset = datasetSelect.options[datasetSelect.selectedIndex].text.split('(')[0].trim();
+
+    const record = {
+      algo: algoName,
+      dataset: dataset,
+      comparisons: comparisons,
+      swaps: swaps,
+      time: `${timeSec}s`
+    };
+
+    benchmarkHistory.unshift(record);
+    if (benchmarkHistory.length > 5) benchmarkHistory.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    if (benchmarkHistory.length === 0) {
+      historyList.innerHTML = `<div class="history-empty">No runs recorded yet. Click <strong>Start</strong> to generate benchmark data.</div>`;
+      return;
+    }
+
+    historyList.innerHTML = '';
+    benchmarkHistory.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'history-item';
+      row.innerHTML = `
+        <span class="algo-tag">${item.algo} <small style="color:var(--text-dim);">[${item.dataset}]</small></span>
+        <span class="stats-tag">${item.comparisons} comps | ${item.swaps} swaps (${item.time})</span>
+      `;
+      historyList.appendChild(row);
+    });
   }
 
   function clearTemporaryStyles() {
@@ -517,7 +624,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const swappings = barsContainer.querySelectorAll('.bar-element.swapping');
     swappings.forEach(el => el.classList.remove('swapping'));
 
-    // Reapply pivot if still active
     if (activePivotIdx !== null) {
       const pivotBar = getBar(activePivotIdx);
       if (pivotBar && !pivotBar.classList.contains('pivot')) {
@@ -540,6 +646,11 @@ document.addEventListener('DOMContentLoaded', () => {
     statSwaps.textContent = '0';
     statTime.textContent = '0.00s';
 
+    analyticsCompCount.textContent = '0 ops';
+    analyticsSwapCount.textContent = '0 ops';
+    analyticsCompBar.style.width = '0%';
+    analyticsSwapBar.style.width = '0%';
+
     statusBeacon.classList.remove('busy');
     setControlsState(false);
     btnPause.disabled = true;
@@ -553,6 +664,11 @@ document.addEventListener('DOMContentLoaded', () => {
     statComparisons.textContent = '0';
     statSwaps.textContent = '0';
     statTime.textContent = '0.00s';
+
+    analyticsCompCount.textContent = '0 ops';
+    analyticsSwapCount.textContent = '0 ops';
+    analyticsCompBar.style.width = '0%';
+    analyticsSwapBar.style.width = '0%';
 
     Array.from(barsContainer.children).forEach(pillar => {
       pillar.classList.remove('active-range');
@@ -598,18 +714,6 @@ document.addEventListener('DOMContentLoaded', () => {
       timerInterval = null;
       accumulatedTime += performance.now() - startTime;
     }
-  }
-
-  function calculateDelay(speedVal) {
-    // 5 -> 300ms (slow teaching), 150 -> 4ms (turbo)
-    return Math.max(4, Math.round(320 - (speedVal * 2.1)));
-  }
-
-  function updateSpeedLabel(val) {
-    if (val < 25) speedValDisplay.textContent = 'Slow-Mo';
-    else if (val < 60) speedValDisplay.textContent = 'Teaching';
-    else if (val < 110) speedValDisplay.textContent = 'Normal';
-    else speedValDisplay.textContent = 'Turbo ⚡';
   }
 
   function updateComplexityBadge() {

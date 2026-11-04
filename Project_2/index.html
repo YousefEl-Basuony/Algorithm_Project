@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sorting Visualizer // Merge vs Quick Sort with Counters</title>
+  <title>Sorting Visualizer // Empirical Divide & Conquer Analytics</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,12 +25,16 @@
           </svg>
         </div>
         <div class="brand-title">
-          <h1>Sorting Visualizer <span class="badge-intermediate">Intermediate</span></h1>
-          <p>Animate merge sort and quicksort with comparison counters</p>
+          <h1>Sorting Visualizer & Analytics <span class="badge-intermediate">Intermediate</span></h1>
+          <p>Animate merge sort and quicksort with comparison counters & empirical statistics</p>
         </div>
       </div>
       
       <div class="header-links">
+        <div class="tempo-indicator">
+          <span class="tempo-dot"></span>
+          <span>Educational Pace (Auto-Tuned)</span>
+        </div>
         <a href="https://github.com/YousefEl-Basuony/Algorithm_Project" target="_blank" class="btn-github">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
@@ -42,7 +46,7 @@
   </header>
 
   <main>
-    <!-- Control Deck -->
+    <!-- Control Deck (Speed slider removed as requested; tuned for clear comprehension) -->
     <section class="control-deck">
       <div class="control-row">
         <div class="controls-group">
@@ -58,7 +62,7 @@
 
           <!-- Dataset Distribution -->
           <div class="input-pill">
-            <label for="dataset-select">Initial State</label>
+            <label for="dataset-select">Initial Dataset</label>
             <select id="dataset-select" class="custom-select">
               <option value="random" selected>Randomized Data</option>
               <option value="reversed">Reverse Sorted (O(n²) Trap)</option>
@@ -67,22 +71,13 @@
             </select>
           </div>
 
-          <!-- Array Size Slider (Set to 10 by default) -->
+          <!-- Array Size Slider (Default 10) -->
           <div class="slider-pill">
             <div class="slider-header">
               <span>Array Size</span>
               <span id="size-val" class="val-display">10</span>
             </div>
-            <input type="range" id="size-slider" class="custom-slider" min="5" max="40" value="10">
-          </div>
-
-          <!-- Speed Slider -->
-          <div class="slider-pill">
-            <div class="slider-header">
-              <span>Speed</span>
-              <span id="speed-val" class="val-display">Teaching</span>
-            </div>
-            <input type="range" id="speed-slider" class="custom-slider" min="5" max="150" value="30">
+            <input type="range" id="size-slider" class="custom-slider" min="5" max="30" value="10">
           </div>
         </div>
 
@@ -184,7 +179,7 @@
     <div class="code-hud-banner">
       <div class="code-hud-left">
         <span class="code-hud-tag">Executing</span>
-        <span class="code-hud-line" id="code-hud-line">// Press 'Start' or 'Step' to begin visualization</span>
+        <span class="code-hud-line" id="code-hud-line">// Click 'Start' to begin visualization at comfortable teaching speed</span>
       </div>
       <div class="code-hud-right">
         <span class="step-desc" id="code-hud-desc">Array initialized with 10 elements</span>
@@ -227,7 +222,99 @@
       <div id="bars-container" class="bars-arena"></div>
     </section>
 
-    <!-- Project 2 Divide & Conquer Analysis Insights -->
+    <!-- 📊 Advanced Empirical Statistics & Analytics Suite (NEW) -->
+    <section class="analytics-suite">
+      <div class="analytics-header">
+        <div class="analytics-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <h2>Empirical Performance Analytics & Benchmarks</h2>
+        </div>
+        <span class="analytics-badge">Live Statistical Modeling</span>
+      </div>
+
+      <div class="analytics-grid">
+        <!-- Operation Distribution Gauge -->
+        <div class="analytics-card">
+          <h4>Operation Proportions</h4>
+          <p class="card-caption">Visual ratio of Comparisons vs Swaps against theoretical upper bounds:</p>
+          
+          <div class="stat-bar-group">
+            <div class="stat-bar-header">
+              <span>Comparisons</span>
+              <span id="analytics-comp-count" class="stat-num yellow">0 ops</span>
+            </div>
+            <div class="stat-bar-track">
+              <div id="analytics-comp-bar" class="stat-bar-fill yellow" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-bar-group">
+            <div class="stat-bar-header">
+              <span>Swaps & Writes</span>
+              <span id="analytics-swap-count" class="stat-num pink">0 ops</span>
+            </div>
+            <div class="stat-bar-track">
+              <div id="analytics-swap-bar" class="stat-bar-fill pink" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-bar-group">
+            <div class="stat-bar-header">
+              <span>Worst-Case Theoretical Cap: n(n-1)/2</span>
+              <span id="analytics-worst-cap" class="stat-num cyan">45 ops</span>
+            </div>
+            <div class="stat-bar-track">
+              <div class="stat-bar-fill cyan" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Algorithmic Efficiency Rating -->
+        <div class="analytics-card">
+          <h4>Efficiency Index & Asymptotics</h4>
+          <div class="efficiency-box" id="efficiency-box">
+            <div class="efficiency-icon" id="efficiency-icon">⚡</div>
+            <div class="efficiency-content">
+              <h5 id="efficiency-title">Awaiting Execution</h5>
+              <p id="efficiency-desc">Run any sorting algorithm to evaluate operations against n·log₂(n) stability bounds.</p>
+            </div>
+          </div>
+
+          <div class="metrics-row">
+            <div class="metric-mini">
+              <span class="mini-label">Theoretical O(n log n)</span>
+              <span class="mini-val" id="val-theoretical-log">~33 ops</span>
+            </div>
+            <div class="metric-mini">
+              <span class="mini-label">Worst Case O(n²)</span>
+              <span class="mini-val" id="val-theoretical-quad">45 ops</span>
+            </div>
+            <div class="metric-mini">
+              <span class="mini-label">Efficiency Delta</span>
+              <span class="mini-val" id="val-efficiency-delta">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparative Run History Log -->
+        <div class="analytics-card">
+          <div class="history-header">
+            <h4>Algorithm Comparison History</h4>
+            <button id="btn-clear-history" class="btn-clear" title="Clear log">Clear</button>
+          </div>
+          <p class="card-caption">Compare Merge Sort vs Quick Sort back-to-back:</p>
+          <div class="history-list" id="history-list">
+            <div class="history-empty">No runs recorded yet. Click <strong>Start</strong> to generate benchmark data.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project 2 Theory Card -->
     <section class="insights-section">
       <div class="insight-card">
         <h3>
@@ -280,7 +367,7 @@
         </h3>
         <p>When selecting the <code class="code-pill">arr[high]</code> (last element) pivot on <strong>Reverse Sorted</strong> or <strong>Already Sorted</strong> arrays, the partition divides the array into subsets of size <code class="code-pill">0</code> and <code class="code-pill">n - 1</code> instead of two equal halves.</p>
         <div class="callout-warning">
-          <strong>Interactive Test:</strong> Set initial state to <em>Reverse Sorted</em> and run <em>Quick Sort (Last-Element Pivot)</em> with 10 elements. Count the comparisons: exactly \( \frac{10 \times 9}{2} = 45 \) comparisons! Compare this with Merge Sort or Randomized Quick Sort.
+          <strong>Interactive Test:</strong> Set initial dataset to <em>Reverse Sorted</em> and run <em>Quick Sort (Last-Element Pivot)</em> with 10 elements. Check the Analytics panel: exactly \( \frac{10 \times 9}{2} = 45 \) comparisons! Compare this with Merge Sort or Randomized Quick Sort.
         </div>
       </div>
     </section>

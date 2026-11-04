@@ -43,3 +43,15 @@ Algorithm_Project/
 ├── Project_2/                  # (Future Assignment)
 │
 └── README.md                   # This master index and documentation file
+
+
+
+
+# Clone the repository
+git clone [https://github.com/YousefEl-Basuony/Algorithm_Project.git](https://github.com/YousefEl-Basuony/Algorithm_Project.git)
+
+# Navigate to the specific project
+cd Algorithm_Project/Project_1
+
+# Run the algorithm and tests
+python insertion_sort.py

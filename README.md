@@ -19,9 +19,9 @@ As the course progresses, new mini-projects and assignments will be continuously
 * **Objective:** Implement the algorithm, count element comparisons and shifts, and analyze its running time empirically.
 * **Analysis:** Detailed performance graphs comparing $O(n)$ and $O(n^2)$ theoretical complexities against real execution times for Sorted, Reverse-Sorted, and Random datasets ($n=100$ to $5000$).
 
-### 🟡 [Project 2: Divide & Conquer Analysis] *(Upcoming)*
-* **Anticipated Focus:** Implementation and empirical testing of $O(n \log n)$ algorithms (e.g., Merge Sort, Quick Sort).
-* **Objective:** Comparing recursive overhead against iterative efficiency.
+### 🟢 [Project 2: Interactive Divide & Conquer Visualizer](./Project_2) *(Completed)*
+* **Algorithm Focus:** Merge Sort vs. Quick Sort (Last-Element Lomuto Partition).
+* **Objective:** Interactive 60 FPS sorting visualizer built with HTML5, CSS3, JavaScript & Web Audio API. Features real-time comparison/swap counters, audio synthesizer feedback, interactive step-by-step playback, and empirical demonstration of the $O(n^2)$ worst-case trap on sorted/reversed data.
 
 ### 🟡 [Project 3: Advanced Data Structures & Graphs] *(Upcoming)*
 * **Anticipated Focus:** Dynamic Programming, Graph Traversals (BFS/DFS), or Shortest Path algorithms.

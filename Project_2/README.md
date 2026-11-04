@@ -1,29 +1,127 @@
-# 📊 Project 2: Divide & Conquer Analysis (Merge vs. Quick Sort)
+# ⚡ AlgoScope // Interactive Divide & Conquer Sorting Visualizer
 
-This project empirically analyzes the behavior of two fundamental divide-and-conquer algorithms: **Merge Sort** and **Quick Sort** (implemented with a last-element pivot).
+<div align="center">
 
-## 1. Implementation & Testing
-Both algorithms were implemented from scratch. To ensure robustness, a unit test suite (`test_sorts.py`) was created to validate the sorting logic against the exact edge cases required:
-*   Empty arrays
-*   Single-element arrays
-*   Arrays with duplicate values
-*   Already sorted arrays
-*   Reverse-sorted arrays
+![Project Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge&logo=statuspage&logoColor=white)
+![Level](https://img.shields.io/badge/Level-Intermediate-f59e0b?style=for-the-badge&logo=target)
+![Tech Stack](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20ES6%2B%20%7C%20Web%20Audio-00f5d4?style=for-the-badge&logo=javascript&logoColor=black)
+![Architecture](https://img.shields.io/badge/Design-Cyberpunk%20Glassmorphism-8b5cf6?style=for-the-badge)
 
-## 2. Experimental Setup
-The execution time was measured for input sizes ($n$) scaling from $10^3$ up to $10^6$ elements. Each input size was tested across three datasets: Randomly distributed, fully sorted, and reverse-sorted.
+<br/>
 
-## 3. Empirical Analysis & Graph Models
+**A high-performance, audio-visual algorithm simulator engineered to demonstrate divide-and-conquer mechanics, comparison overhead, and asymptotic complexity boundaries in real-time.**
 
- 
-### Merge Sort Observations: $O(n \log n)$
-As seen in the left graph, Merge Sort's execution time grows identically regardless of the input data's initial state (Random, Sorted, or Reversed). It strictly follows the theoretical $O(n \log n)$ curve. This confirms that Merge Sort does not suffer from worst-case data permutations, though it consistently requires $O(n)$ auxiliary space.
+<br/>
 
-### Quick Sort (Last-Element Pivot) Observations: $O(n \log n)$ vs $O(n^2)$
-The right graph clearly demonstrates the critical flaw of choosing the *last element* as a pivot:
-*   **Random Data:** Quick Sort performs exceptionally well, often outperforming Merge Sort due to lower constant factors and in-place swapping. It follows the expected $O(n \log n)$ curve.
-*   **Sorted & Reversed Data (The $O(n^2)$ Trap):** When the array is already sorted or reverse-sorted, the last element is the absolute worst pivot choice (either the maximum or minimum value). This causes the partition step to degenerate from dividing the array in half to merely reducing it by one element per recursive call. 
-*   *Note on Hardware Limit:* For $n \ge 10^5$, the $O(n^2)$ complexity of Quick Sort on sorted/reversed arrays requires trillions of operations and exceeds maximum recursion depth. The measurements for these specific worst cases were capped at $n=10,000$ to prevent complete system unresponsiveness.
+<img src="assets/preview.png" alt="Sorting Visualizer Preview" width="100%" style="border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);" />
 
-## 4. Conclusion
-While Quick Sort is faster on average for randomized data due to zero memory allocation overhead, its naive last-element pivot implementation is highly vulnerable to sorted data. Merge Sort, while slightly slower practically on random data, guarantees $O(n \log n)$ mathematical stability, making it the required choice when worst-case latency must be strictly bounded.
+</div>
+
+---
+
+## 🚀 Key Highlights & Architectural Features
+
+### 🎨 1. Cyberpunk Glassmorphism UI & 60 FPS Visuals
+* **Hardware-Accelerated Animations:** Rendered with CSS `transform` and `flexbox` transitions running at butter-smooth 60 frames per second without frame drops.
+* **Smart Dynamic Color Coding:**
+  * 🩵 **Unsorted Bars:** Sleek cyan-to-azure gradient with subtle neon aura.
+  * 💛 **Active Comparison:** Glowing high-intensity amber (`#ffd166`) with upward elevation.
+  * 🔴 **Pivot Element:** Hot neon crimson with a dedicated floating `PIVOT` indicator badge.
+  * 💜 **Swap / Overwrite:** Electric violet burst with depth pulses.
+  * 💚 **Sorted / Victory Sweep:** Shimmering emerald green wave cascade on completion.
+
+### ⚡ 2. Real-Time Empirical Metric HUD
+* **Comparison Counter:** Accurately tallies every single comparison operation executed by the algorithm.
+* **Swaps / Overwrites Counter:** Monitors array mutations and auxiliary memory transfers.
+* **Stopwatch Timer:** High-precision elapsed time tracker using `performance.now()`.
+* **Dynamic Complexity Monitor:** Automatically flags the current theoretical complexity (e.g., transitions to $O(n^2)$ when Quick Sort runs on reversed data).
+
+### 🔊 3. Interactive Web Audio Synthesizer
+* Native integration with the **Web Audio API** (zero external dependencies).
+* Maps each array element's value to a corresponding audible frequency ($160\text{ Hz} \to 950\text{ Hz}$).
+* Generates distinctive acoustic feedback for comparisons, swaps, and an arpeggio victory chord upon completion (with a one-click mute toggle).
+
+### 🎛️ 4. Full Execution Engine & State Machine
+* **Generator-Based Control:** Built with JavaScript ES6 `function*` generators, eliminating fragile async timeout loops.
+* **Interactive Step Mode (`Step`):** Allows students and educators to advance the algorithm one comparison/swap at a time for deep analysis.
+* **Live Speed & Size Sliders:** Adjust visualization speed from slow-motion teaching mode up to turbo speed, and scale arrays from 10 to 80 elements dynamically.
+* **Dataset Presets:** Instantly toggle between **Randomized**, **Reverse-Sorted**, **Already Sorted**, and **Nearly Sorted** distributions.
+
+---
+
+## 📊 Divide & Conquer Empirical Analysis
+
+This project directly demonstrates the theoretical and practical behaviors of **Merge Sort** and **Quick Sort** (Lomuto partition with last-element pivot):
+
+| Algorithm | Best Case | Average Case | Worst Case | Auxiliary Space | Stable? | Primary Mechanism |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Merge Sort** | $\Omega(n \log n)$ | $\Theta(n \log n)$ | $O(n \log n)$ | $O(n)$ | **Yes** | Divide in half, merge sorted subarrays |
+| **Quick Sort (Last Pivot)** | $\Omega(n \log n)$ | $\Theta(n \log n)$ | $\mathbf{O(n^2)}$ | $O(\log n)$ | **No** | In-place partition around $arr[\text{high}]$ |
+| **Quick Sort (Random Pivot)** | $\Omega(n \log n)$ | $\Theta(n \log n)$ | $O(n \log n)^*$ | $O(\log n)$ | **No** | Randomized pivot avoids pathological inputs |
+
+*\*Expected worst case probability is negligibly small ($O(1/n!)$).*
+
+---
+
+### ⚠️ The $O(n^2)$ Last-Element Pivot Trap
+
+A central objective of this project is demonstrating the severe vulnerability of choosing the **last element** as the pivot ($arr[high]$):
+
+1. **Random Input:** The pivot splits the array into reasonably balanced partitions, achieving optimal $\Theta(n \log n)$ recurrence:
+   $$T(n) = 2T(n/2) + \Theta(n) \implies O(n \log n)$$
+2. **Reverse-Sorted / Already-Sorted Input:** 
+   When the array is sorted or reversed, the last element is perpetually the absolute extreme (minimum or maximum). The partition step degenerates into subsets of sizes $0$ and $n - 1$:
+   $$T(n) = T(n - 1) + \Theta(n)$$
+   Expanding the recurrence yields:
+   $$\sum_{i=1}^{n-1} i = \frac{n(n - 1)}{2} = \mathbf{O(n^2)}$$
+
+> **Try it in the app:** Select **Quick Sort (Last-Element Pivot)** and set the distribution to **Reverse Sorted**. Observe how the comparison counter soars to nearly $\frac{n(n-1)}{2}$ operations. Then switch to **Quick Sort (Random Pivot)** to see the partition balance restored immediately!
+
+---
+
+## 🗂️ Project Structure
+
+```text
+Project_2/
+├── assets/
+│   └── preview.png          # High-resolution screenshot of the application
+├── index.html               # Semantic HTML5 layout, HUD counters & controls
+├── style.css                # Modern Cyberpunk theme, glassmorphism & bar animations
+├── audio.js                 # Web Audio API sound synthesis engine
+├── algorithms.js            # Generator-based implementations (Merge, Quick, Random Quick)
+├── app.js                   # Application state manager & DOM manipulation pipeline
+└── README.md                # Project documentation & complexity analysis
+```
+
+---
+
+## 💻 How to Run Locally
+
+This project is built purely with **Vanilla Web Technologies** and requires **zero build tools, no `npm install`, and no local server**.
+
+### Quick Start:
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/YousefEl-Basuony/Algorithm_Project.git
+   cd Algorithm_Project/Project_2
+   ```
+2. Open `index.html` directly in any modern web browser (Chrome, Edge, Firefox, Safari):
+   * **Windows:** Double-click `index.html` or run:
+     ```powershell
+     Start-Process index.html
+     ```
+   * **Mac / Linux:**
+     ```bash
+     open index.html # Mac
+     xdg-open index.html # Linux
+     ```
+
+---
+
+## 🎓 Educational Purpose & Credits
+
+Developed as part of the **Divide & Conquer Empirical Analysis (Project 2)** study, fulfilling all assignment requirements:
+* ✅ Full visualization of **Merge Sort** and **Quick Sort**.
+* ✅ Real-time digital **Comparison Counters** and **Swap Counters**.
+* ✅ Responsive, interactive UI with sound synthesis and variable speed controls.
+* ✅ Clear empirical demonstration of asymptotic complexity limits.

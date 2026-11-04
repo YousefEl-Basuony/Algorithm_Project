@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Visualizer // Merge vs Quick Sort with Counters</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 18h3v-6H3v6zm6 0h3V9H9v9zm6 0h3V4h-3v14zm6 0h3v-9h-3v9z"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>Sorting Visualizer <span class="badge-tag"><span class="badge-dot"></span>Intermediate</span></h1>
+          <p>Animate merge sort and quicksort with comparison counters</p>
+        </div>
+      </div>
+      
+      <div class="header-links">
+        <a href="https://github.com/YousefEl-Basuony/Algorithm_Project" target="_blank" class="btn-secondary-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          Repository
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Control Deck -->
+    <section class="control-deck">
+      <div class="control-row">
+        <div class="controls-group">
+          <!-- Algorithm Selection -->
+          <div class="input-pill">
+            <label for="algo-select">Algorithm</label>
+            <select id="algo-select" class="custom-select">
+              <option value="quickSort" selected>Quick Sort (Last-Element Pivot)</option>
+              <option value="mergeSort">Merge Sort (Divide & Conquer)</option>
+              <option value="quickSortRandom">Quick Sort (Random Pivot)</option>
+            </select>
+          </div>
+
+          <!-- Dataset Distribution -->
+          <div class="input-pill">
+            <label for="dataset-select">Initial State</label>
+            <select id="dataset-select" class="custom-select">
+              <option value="random" selected>Randomized Data</option>
+              <option value="reversed">Reverse Sorted (O(n²) Trap)</option>
+              <option value="sorted">Already Sorted</option>
+              <option value="nearlySorted">Nearly Sorted</option>
+            </select>
+          </div>
+
+          <!-- Array Size Slider -->
+          <div class="slider-pill">
+            <div class="slider-header">
+              <span>Array Size</span>
+              <span id="size-val" class="val-display">36</span>
+            </div>
+            <input type="range" id="size-slider" class="custom-slider" min="10" max="80" value="36">
+          </div>
+
+          <!-- Speed Slider -->
+          <div class="slider-pill">
+            <div class="slider-header">
+              <span>Speed</span>
+              <span id="speed-val" class="val-display">Medium</span>
+            </div>
+            <input type="range" id="speed-slider" class="custom-slider" min="5" max="150" value="45">
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="buttons-group">
+          <button id="btn-start" class="btn btn-primary" title="Start Sorting">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <span>Start</span>
+          </button>
+
+          <button id="btn-pause" class="btn btn-secondary" disabled title="Pause / Resume">
+            <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+            <span id="pause-label">Pause</span>
+          </button>
+
+          <button id="btn-step" class="btn btn-secondary" title="Execute single step">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+            </svg>
+            <span>Step</span>
+          </button>
+
+          <button id="btn-shuffle" class="btn btn-secondary" title="Generate New Array">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+            </svg>
+            <span>Shuffle</span>
+          </button>
+
+          <button id="btn-sound" class="btn-icon-toggle active" title="Toggle Audio Synthesizer">
+            <svg id="icon-sound" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Metrics HUD -->
+    <section class="metrics-grid">
+      <div class="metric-card card-comparisons">
+        <div class="metric-info">
+          <p class="label">Comparisons Counter</p>
+          <h3 class="value" id="stat-comparisons">0</h3>
+        </div>
+        <div class="metric-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metric-card card-swaps">
+        <div class="metric-info">
+          <p class="label">Swaps & Overwrites</p>
+          <h3 class="value" id="stat-swaps">0</h3>
+        </div>
+        <div class="metric-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metric-card card-time">
+        <div class="metric-info">
+          <p class="label">Elapsed Time</p>
+          <h3 class="value" id="stat-time">0.00s</h3>
+        </div>
+        <div class="metric-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+      </div>
+
+      <div class="metric-card card-complexity">
+        <div class="metric-info">
+          <p class="label">Theoretical Complexity</p>
+          <h3 class="value" id="stat-complexity">O(n log n)</h3>
+        </div>
+        <div class="metric-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visualizer Stage Arena -->
+    <section class="stage-wrapper">
+      <div class="stage-header">
+        <div class="status-indicator">
+          <span class="status-beacon" id="status-beacon"></span>
+          <span class="status-text" id="status-text">Ready. Choose an algorithm and click Start.</span>
+        </div>
+
+        <div class="legend-group">
+          <div class="legend-item">
+            <span class="legend-color default"></span>
+            <span>Unsorted</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color comparing"></span>
+            <span>Comparing</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color pivot"></span>
+            <span>Pivot</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color swapping"></span>
+            <span>Swap/Overwrite</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color sorted"></span>
+            <span>Sorted</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Bars Container -->
+      <div id="bars-container" class="bars-arena"></div>
+    </section>
+
+    <!-- Project 2 Divide & Conquer Analysis Insights -->
+    <section class="insights-section">
+      <div class="insight-card">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Divide & Conquer Complexity Breakdown
+        </h3>
+        <p>Both <strong>Merge Sort</strong> and <strong>Quick Sort</strong> decompose problem sets into smaller subproblems. However, their partition behavior and memory access patterns lead to sharply contrasting trade-offs:</p>
+        
+        <table class="theory-table">
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Best</th>
+              <th>Average</th>
+              <th>Worst Case</th>
+              <th>Space</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Merge Sort</strong></td>
+              <td>O(n log n)</td>
+              <td>O(n log n)</td>
+              <td>O(n log n)</td>
+              <td>O(n)</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Quick Sort (Last Pivot)</strong></td>
+              <td>O(n log n)</td>
+              <td>O(n log n)</td>
+              <td style="color: var(--accent-red);">O(n²)</td>
+              <td>O(log n)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-card">
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          The O(n²) Last-Element Pivot Trap
+        </h3>
+        <p>When selecting the <code class="code-pill">arr[high]</code> (last element) pivot on <strong>Reverse Sorted</strong> or <strong>Already Sorted</strong> arrays, the partition divides the array into subsets of size <code class="code-pill">0</code> and <code class="code-pill">n - 1</code> instead of two equal halves.</p>
+        <div class="callout-warning">
+          <strong>Try it in the Visualizer:</strong> Select <em>Quick Sort (Last-Element Pivot)</em> with <em>Reverse Sorted</em> data. Watch the comparisons count skyrocket to near \( \frac{n(n-1)}{2} \) operations! Then switch to <em>Random Pivot</em> to see the issue resolved.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Project 2: Divide & Conquer Empirical Analysis // Built with HTML5, CSS3 & Modern JavaScript</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="algorithms.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
